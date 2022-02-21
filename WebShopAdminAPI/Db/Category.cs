@@ -1,10 +1,13 @@
-﻿namespace WebShopAdminAPI.Db
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WebShopAdminAPI.Db
 {
     /// <summary>
     /// Категория товаров
     /// </summary>
     public class Category
     {
+        [Key]
         /// <summary>
         /// Id категории
         /// </summary>
@@ -34,5 +37,10 @@
         /// Дочерние подкатегории
         /// </summary>
         public ICollection<Category> SubCategories { get; } = new List<Category>();
+
+        /// <summary>
+        /// Товары в категории
+        /// </summary>
+        public ICollection<Item> Items { get; } = new List<Item>();
     }
 }

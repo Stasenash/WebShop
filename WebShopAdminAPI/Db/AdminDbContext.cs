@@ -7,6 +7,7 @@ namespace WebShopAdminAPI.Db
         private readonly string connectionString;
 
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Item> Items { get; set; }
 
         public AdminDbContext(IConfigurationRoot configuration)
         {
@@ -15,16 +16,17 @@ namespace WebShopAdminAPI.Db
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Category>(entity =>
-            {
-                entity.HasKey(x => x.Id);
-                entity.Property(x => x.Name);
-                entity.HasOne(x => x.Parent)
-                    .WithMany(x => x.SubCategories)
-                    .HasForeignKey(x => x.ParentId)
-                    .IsRequired(false)
-                    .OnDelete(DeleteBehavior.Restrict);
-            });
+            modelBuilder.Entity<Category>()
+                .HasOne(x => x.Parent)
+                .WithMany(x => x.SubCategories)
+                .HasForeignKey(x => x.ParentId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Item>()
+                .HasOne(x => x.Category)
+                .WithMany(g => g.Items)
+                .HasForeignKey(x => x.CategoryId);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
