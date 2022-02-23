@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebShopAdminAPI.Controllers
 {
-    public class HomeController : Controller
+    [ApiController]
+    [ApiExplorerSettings]
+    [Route("[controller]")]
+    public class MainController : ControllerBase
     {
-        // GET: HomeController
+        [HttpGet("Index")]
         public ActionResult Index()
         {
             return Ok("Ok");
