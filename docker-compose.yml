@@ -16,13 +16,15 @@ services:
   admin_db:
     image: postgres:13.3
     restart: always
-    container_name: 'admin_postgres'
+    container_name: 'admin_db'
     environment:
       POSTGRES_DB: admin
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
     ports:
-      - 5432:5432  
+      - 5432:5432
+    volumes:
+      - ./admin_db_backup:/var/lib/postgresql/data
 
   webshopadminapi:
     restart: on-failure
@@ -43,4 +45,8 @@ services:
     build:
       context: .
       dockerfile: WebShopAdminApplication/Dockerfile
+    ports:
+      - 8081:443
+    links:
+      - admin_api
 
