@@ -1,0 +1,33 @@
+﻿@page
+@using System.Linq
+@model WebShopAdminApplication.Pages.CategoriesModel
+@{
+    var groupedCategories = Model.Categories.Select(x => 
+    {
+        var parentName = Model.Categories.FirstOrDefault(p => p.Id == x.ParentId)?.Name;
+        return new
+        {
+            Id = x.Id,
+            ParentName = parentName,
+            Name = !string.IsNullOrEmpty(parentName) ? $"{parentName} / {x.Name}" : x.Name
+        };
+    })
+    .OrderBy(x => x.Name)
+    .ToList();
+}
+
+<h1>Категории</h1>
+<form method="post">
+    @foreach(var category in groupedCategories)
+    {
+        <div>
+            <p>@category.Name</p>
+            <button>
+                <a asp-page="./EditCategory" asp-route-id="@category.Id">Редактировать</a>
+            </button>
+            <button type="submit" asp-page-handler="delete" asp-route-id="@category.Id">Удалить</button>
+        </div>
+    }
+
+    <a asp-page="./EditCategory" asp-route-id="-1">Создать категорию</a>
+</form>

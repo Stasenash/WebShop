@@ -25,9 +25,14 @@ namespace WebShopAdminAPI.Models
         public string ImageUrl { get; set; }
 
         /// <summary>
-        /// Навигационное поле для категории
+        /// Название категории
         /// </summary>
         public string CategoryName { get; set; }
+
+        /// <summary>
+        /// Название категории
+        /// </summary>
+        public int CategoryId { get; set; }
 
         public ItemDto(Item item)
         {
@@ -36,6 +41,7 @@ namespace WebShopAdminAPI.Models
             Price = item.Price;
             ImageUrl = item.ImageUrl;
             CategoryName = item.Category?.Name ?? string.Empty;
+            CategoryId = item.CategoryId;
         }
     }
 }

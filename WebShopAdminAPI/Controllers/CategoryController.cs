@@ -73,7 +73,7 @@ namespace WebShopAdminAPI.Controllers
         }
 
         [HttpPut("edit")]
-        public ActionResult CreateCategory([FromBody] CategoryEditRequest request)
+        public ActionResult UpdateCategory([FromBody] CategoryEditRequest request)
         {
             if (request == null || request.Id == 0 || string.IsNullOrEmpty(request.Name))
             {

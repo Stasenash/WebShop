@@ -1,0 +1,32 @@
+﻿@page
+@model WebShopAdminApplication.Pages.ItemsModel
+@{
+    var groupedItems = Model.Items.Select(x => new
+    {
+        Id = x.Id,
+        Name = x.Name,
+        CategoryName = x.CategoryName,
+        DisplayName = $"{x.CategoryName} / {x.Name}",
+        Price = x.Price,
+        ImageUrl = x.ImageUrl
+    })
+    .OrderBy(x => x.CategoryName)
+    .ToList();
+}
+<h1>Товары</h1>
+<form method="post">
+    @foreach(var item in groupedItems)
+    {
+        <div>
+            <img src="@item.ImageUrl" height="200"/>
+            <p>@item.DisplayName</p>
+            <p>@item.Price руб.</p>
+            <button>
+                <a asp-page="./EditItem" asp-route-id="@item.Id">Редактировать</a>
+            </button>
+            <button type="submit" asp-page-handler="delete" asp-route-id="@item.Id">Удалить</button>
+        </div>
+    }
+
+    <a asp-page="./EditItem" asp-route-id="-1">Создать товар</a>
+</form>

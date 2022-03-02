@@ -20,16 +20,36 @@ namespace WebShopAdminAPI.Controllers
         }
 
         [HttpGet("list")]
-        public ActionResult GetAllCategories()
+        public ActionResult GetAllItems()
         {
             try
             {
-                var categories = _db.Items
+                var items = _db.Items
                     .Include(x => x.Category)
                     .Select(x => new ItemDto(x))
                     .ToList();
 
-                return Ok(categories);
+                return Ok(items);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("")]
+        public ActionResult GetItem(int id)
+        {
+            try
+            {
+                var item = _db.Items
+                    .Include(x => x.Category)
+                    .Where(x => x.Id == id)
+                    .Select(x => new ItemDto(x))
+                    .FirstOrDefault();
+
+                return Ok(item);
 
             }
             catch (Exception ex)
@@ -74,7 +94,7 @@ namespace WebShopAdminAPI.Controllers
         }
 
         [HttpPut("edit")]
-        public ActionResult CreateItem([FromBody] ItemEditRequest request)
+        public ActionResult UpdateItem([FromBody] ItemEditRequest request)
         {
             if (request == null || request.Id == 0 || string.IsNullOrEmpty(request.Name))
             {
@@ -105,7 +125,7 @@ namespace WebShopAdminAPI.Controllers
             }
         }
 
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("delete")]
         public ActionResult DeleteItem(int id)
         {
             if (id == 0)

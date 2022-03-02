@@ -1,0 +1,24 @@
+﻿@page "{id:int}"
+@model WebShopAdminApplication.Pages.EditItemModel
+@{
+}
+
+<h1>Редактирование категории</h1>
+<form method="post">
+    <div asp-validation-summary="All"></div>
+    <input asp-for="Item.Id" type="hidden" />
+
+    <label asp-for="Item.Name">Название</label>
+    <input asp-for="Item.Name" />
+
+    <label asp-for="Item.Price">Цена</label>
+    <input asp-for="Item.Price" />
+
+    <label asp-for="Item.ImageUrl">Картинка</label>
+    <input asp-for="Item.ImageUrl" />
+
+    <label asp-for="Item.CategoryId">Категория</label>
+    <select asp-for="Item.CategoryId" asp-items="Model.AllCategories"></select>
+
+    <button type="submit">Сохранить</button>
+</form>
