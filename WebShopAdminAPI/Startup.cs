@@ -1,5 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebShopAdminAPI.Db;
+using System;
+using System.Threading.Tasks;
+using MassTransit;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace WebShopAdminAPI
 {
@@ -20,6 +24,24 @@ namespace WebShopAdminAPI
             services.AddSingleton(_ => Configuration);
 
             services.AddDbContext<AdminDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("AdminDb")));
+
+            services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    var host = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
+                    var port = Environment.GetEnvironmentVariable("RABBITMQ_PORT");
+                    var userName = Environment.GetEnvironmentVariable("RABBITMQ_USER");
+                    var password = Environment.GetEnvironmentVariable("RABBITMQ_PASS");
+
+                    cfg.Host(new Uri(host), credentials =>
+                    {
+                        credentials.Username(userName);
+                        credentials.Password(password);
+                    });
+                });
+            });
+            services.AddMassTransitHostedService();
         }
         public void Configure(IApplicationBuilder app)
         {

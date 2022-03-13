@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebShopAdminAPI.Db;
 using WebShopAdminAPI.Models;
+using WebShopContracts;
 
 namespace WebShopAdminAPI.Controllers
 {
@@ -12,11 +14,16 @@ namespace WebShopAdminAPI.Controllers
     {
         private readonly ILogger<ItemController> _logger;
         private readonly AdminDbContext _db;
+        readonly IPublishEndpoint _publishEndpoint;
 
-        public ItemController(AdminDbContext db, ILogger<ItemController> logger)
+        public ItemController(
+            AdminDbContext db, 
+            ILogger<ItemController> logger,
+            IPublishEndpoint publishEndpoint)
         {
             _db = db;
             _logger = logger;
+            _publishEndpoint = publishEndpoint;
         }
 
         [HttpGet("list")]
@@ -85,6 +92,16 @@ namespace WebShopAdminAPI.Controllers
                 _db.SaveChanges();
 
                 var created = _db.Items.FirstOrDefault(x => x.Name == request.Name);
+
+                _publishEndpoint.Publish<IItemAdded>(new
+                {
+                    Id = created.Id,
+                    Name = created.Name,
+                    Price = created.Price,
+                    ImageUrl = created.ImageUrl,
+                    CategoryId = created.CategoryId
+                });
+
                 return Ok(new ItemDto(created));
             }
             catch (Exception ex)
@@ -117,6 +134,16 @@ namespace WebShopAdminAPI.Controllers
                 _db.SaveChanges();
 
                 var edited = _db.Items.FirstOrDefault(x => x.Id == request.Id);
+
+                _publishEndpoint.Publish<IItemUpdated>(new
+                {
+                    Id = edited.Id,
+                    Name = edited.Name,
+                    Price = edited.Price,
+                    ImageUrl = edited.ImageUrl,
+                    CategoryId = edited.CategoryId
+                });
+
                 return Ok(new ItemDto(edited));
             }
             catch (Exception ex)
@@ -135,9 +162,15 @@ namespace WebShopAdminAPI.Controllers
 
             try
             {
-                var Item = _db.Items.FirstOrDefault(x => x.Id == id);
-                _db.Items.Remove(Item);
+                var item = _db.Items.FirstOrDefault(x => x.Id == id);
+                _db.Items.Remove(item);
                 _db.SaveChanges();
+
+                _publishEndpoint.Publish<IItemDeleted>(new
+                {
+                    Id = item.Id,
+                    CategoryId = item.CategoryId
+                });
 
                 return Ok();
             }

@@ -30,6 +30,11 @@ services:
     restart: on-failure
     container_name: 'admin_api'
     image: ${DOCKER_REGISTRY-}webshopadminapi
+    environment:
+      RABBITMQ_HOST: "rabbitmq:5672"
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: "guest"
+      RABBITMQ_PASS: "guest"
     build:
       context: .
       dockerfile: WebShopAdminAPI/Dockerfile
@@ -37,6 +42,7 @@ services:
       - 8080:443
     links:
       - admin_db
+      - rabbitmq
 
   webshopadminapplication:
     restart: on-failure
@@ -49,4 +55,32 @@ services:
       - 8081:443
     links:
       - admin_api
+
+#--------------------------------CATALOG--------------------------------------
+  catalog_db:
+    container_name: 'catalog_db'
+    image: mongo
+    restart: always
+    ports:
+        - 27017:27017
+    environment:
+        MONGO_INITDB_ROOT_USERNAME: root
+        MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+        - ./catalog_db_backup:/data/db
+
+  webshopcatalogconsumer:
+    container_name: 'catalog_consumer'
+    environment:
+      RABBITMQ_HOST: "rabbitmq:5672"
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: "guest"
+      RABBITMQ_PASS: "guest"
+    image: ${DOCKER_REGISTRY-}webshopcatalogconsumer
+    build:
+      context: .
+      dockerfile: WebShopCatalogConsumer/Dockerfile
+    links:
+     - catalog_db
+     - rabbitmq
 

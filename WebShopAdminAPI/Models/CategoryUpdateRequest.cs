@@ -3,7 +3,7 @@
 namespace WebShopAdminAPI.Models
 {
     [BindProperties]
-    public class CategoryEditRequest : CategoryCreateRequest
+    public class CategoryUpdateRequest : CategoryCreateRequest
     {
         public int Id { get; set; }
     }

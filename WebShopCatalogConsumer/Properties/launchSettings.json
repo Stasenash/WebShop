@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "WebShopCatalogConsumer": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

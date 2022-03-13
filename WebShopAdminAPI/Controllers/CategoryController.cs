@@ -1,7 +1,9 @@
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebShopAdminAPI.Db;
 using WebShopAdminAPI.Models;
+using WebShopContracts;
 
 namespace WebShopAdminAPI.Controllers
 {
@@ -12,11 +14,16 @@ namespace WebShopAdminAPI.Controllers
     {
         private readonly ILogger<CategoryController> _logger;
         private readonly AdminDbContext _db;
+        readonly IPublishEndpoint _publishEndpoint;
 
-        public CategoryController(AdminDbContext db, ILogger<CategoryController> logger)
+        public CategoryController(
+            AdminDbContext db, 
+            ILogger<CategoryController> logger,
+            IPublishEndpoint publishEndpoint)
         {
             _db = db;
             _logger = logger;
+            _publishEndpoint = publishEndpoint;
         }
 
         [HttpGet("list")]
@@ -64,7 +71,15 @@ namespace WebShopAdminAPI.Controllers
                 _db.SaveChanges();
 
                 var created = _db.Categories.FirstOrDefault(x => x.Name == request.Name);
-                return Ok(new CategoryDto(created));
+                
+                _publishEndpoint.Publish<ICategoryCreated>(new 
+                {  
+                    Id = created.Id,
+                    Name = created.Name,
+                    ParentId = created.ParentId
+                });
+
+                return base.Ok(new Models.CategoryDto(created));
             }
             catch (Exception ex)
             {
@@ -73,7 +88,7 @@ namespace WebShopAdminAPI.Controllers
         }
 
         [HttpPut("edit")]
-        public ActionResult UpdateCategory([FromBody] CategoryEditRequest request)
+        public ActionResult UpdateCategory([FromBody] CategoryUpdateRequest request)
         {
             if (request == null || request.Id == 0 || string.IsNullOrEmpty(request.Name))
             {
@@ -92,8 +107,16 @@ namespace WebShopAdminAPI.Controllers
                 category.ParentId = request.ParentId;
                 _db.SaveChanges();
 
-                var edited = _db.Categories.FirstOrDefault(x => x.Id == request.Id);
-                return Ok(new CategoryDto(edited));
+                var updated = _db.Categories.FirstOrDefault(x => x.Id == request.Id);
+
+                _publishEndpoint.Publish<ICategoryUpdated>(new
+                {
+                    Id = updated.Id,
+                    Name = updated.Name,
+                    ParentId = updated.ParentId
+                });
+
+                return base.Ok(new Models.CategoryDto(updated));
             }
             catch (Exception ex)
             {
@@ -114,6 +137,11 @@ namespace WebShopAdminAPI.Controllers
                 var category = _db.Categories.FirstOrDefault(x => x.Id == id);
                 _db.Categories.Remove(category);
                 _db.SaveChanges();
+
+                _publishEndpoint.Publish<ICategoryDeleted>(new
+                {
+                    Id = id
+                });
 
                 return Ok();
             }
