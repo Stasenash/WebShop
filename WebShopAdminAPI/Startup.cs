@@ -34,11 +34,7 @@ namespace WebShopAdminAPI
                     var userName = Environment.GetEnvironmentVariable("RABBITMQ_USER");
                     var password = Environment.GetEnvironmentVariable("RABBITMQ_PASS");
 
-                    cfg.Host(new Uri(host), credentials =>
-                    {
-                        credentials.Username(userName);
-                        credentials.Password(password);
-                    });
+                    cfg.Host(new Uri("rabbitmq://guest:guest@rabbitmq:5672"));
                 });
             });
             services.AddMassTransitHostedService();

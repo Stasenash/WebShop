@@ -70,6 +70,7 @@ services:
         - ./catalog_db_backup:/data/db
 
   webshopcatalogconsumer:
+    restart: on-failure
     container_name: 'catalog_consumer'
     environment:
       RABBITMQ_HOST: "rabbitmq:5672"

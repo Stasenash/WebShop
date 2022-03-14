@@ -30,10 +30,18 @@ namespace WebShopCatalogConsumer.Db
             return category;
         }
 
-        public void Update(string id, Category categoryIn) => _categories.ReplaceOne(x => x.Id == id, categoryIn);
+        public void Update(Category category)
+        {
+            var oldCategory = _categories.Find(x => x.RelationalId == category.RelationalId).FirstOrDefault();
+            oldCategory.Name = category.Name;
+            oldCategory.ParentId = category.ParentId;
 
-        public void Remove(Category categoryIn) => _categories.DeleteOne(x => x.Id == categoryIn.Id);
+            _categories.ReplaceOne(x => x.Id == oldCategory.Id, oldCategory);
+        }
 
-        public void Remove(string id) => _categories.DeleteOne(x => x.Id == id);
+        public void Remove(int categoryId)
+        {
+            _categories.DeleteOne(x => x.RelationalId == categoryId);
+        }
     }
 }

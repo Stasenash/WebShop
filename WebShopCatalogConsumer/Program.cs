@@ -9,13 +9,10 @@ using WebShopCatalogConsumer.Db;
 
 public class Program
 {
-    public static void Main()
+    public static async Task Main()
     {
         ServiceProvider serviceProvider = RegisterServices();
-        SetupMasstransit(serviceProvider);
-
-        ILogger logger = serviceProvider.GetService<ILogger<Program>>();
-        logger.LogInformation("Consumer started");
+        await SetupMasstransit(serviceProvider);
 
         serviceProvider.Dispose();
     }
@@ -48,9 +45,9 @@ public class Program
             .Build();
     }
 
-    private static void SetupMasstransit(IServiceProvider serviceProvider)
+    private static async Task SetupMasstransit(IServiceProvider serviceProvider)
     {
-        var consumer = serviceProvider.GetRequiredService(typeof(CatalogConsumer));
+        var consumer = (CatalogConsumer)serviceProvider.GetRequiredService(typeof(CatalogConsumer));
 
         var host = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
         var port = Environment.GetEnvironmentVariable("RABBITMQ_PORT");
@@ -59,16 +56,23 @@ public class Program
 
         var busControl = Bus.Factory.CreateUsingRabbitMq(cfg =>
         {
-            cfg.Host(new Uri(host), credentials => 
-            {
-                credentials.Username(userName);
-                credentials.Password(password);
-            });
-
-            cfg.ReceiveEndpoint("Catalog_Queue", e =>
+            cfg.Host(new Uri("rabbitmq://guest:guest@rabbitmq:5672"));
+            cfg.ReceiveEndpoint("catalog-queue", e =>
             {
                 e.Instance(consumer);
             });
         });
+
+        var source = new CancellationTokenSource();
+        await busControl.StartAsync(source.Token);
+        try
+        {
+            Console.WriteLine("Consumer started");
+            await Task.Run(() => Console.ReadLine());
+        }
+        finally
+        {
+            await busControl.StopAsync();
+        }
     }
 }
