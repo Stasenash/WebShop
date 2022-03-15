@@ -47,16 +47,16 @@ public class Program
 
     private static async Task SetupMasstransit(IServiceProvider serviceProvider)
     {
-        var consumer = (CatalogConsumer)serviceProvider.GetRequiredService(typeof(CatalogConsumer));
-
-        var host = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
-        var port = Environment.GetEnvironmentVariable("RABBITMQ_PORT");
-        var userName = Environment.GetEnvironmentVariable("RABBITMQ_USER");
-        var password = Environment.GetEnvironmentVariable("RABBITMQ_PASS");
+        var consumer = (CatalogConsumer)serviceProvider.GetRequiredService(typeof(CatalogConsumer));        
 
         var busControl = Bus.Factory.CreateUsingRabbitMq(cfg =>
         {
-            cfg.Host(new Uri("rabbitmq://guest:guest@rabbitmq:5672"));
+            var host = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
+            var port = Environment.GetEnvironmentVariable("RABBITMQ_PORT");
+            var userName = Environment.GetEnvironmentVariable("RABBITMQ_USER");
+            var password = Environment.GetEnvironmentVariable("RABBITMQ_PASS");
+
+            cfg.Host(new Uri($"rabbitmq://{userName}:{password}@{host}:{port}"));
             cfg.ReceiveEndpoint("catalog-queue", e =>
             {
                 e.Instance(consumer);

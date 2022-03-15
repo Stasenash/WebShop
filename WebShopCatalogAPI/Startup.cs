@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace WebShopAdminAPI
+namespace WebShopCatalogAPI
 {
     public class Startup
     {
@@ -23,7 +23,11 @@ namespace WebShopAdminAPI
 
             services.AddSingleton(_ => Configuration);
 
-            services.AddDbContext<AdminDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("AdminDb")));
+            services.Configure<CatalogDatabaseSettings>(configuration.GetSection(nameof(CatalogDatabaseSettings)));
+            services.AddSingleton<ICatalogDatabaseSettings>(sp => sp.GetRequiredService<IOptions<CatalogDatabaseSettings>>().Value);
+
+            services.AddSingleton<CategoryService>();
+            services.AddSingleton<ItemService>();
 
             services.AddMassTransit(x =>
             {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebShopCatalogConsumer.Db
+namespace WebShopCatalogAPI.Db
 {
     public class Category
     {

@@ -1,5 +1,10 @@
 version: '3.4'
 
+# localhost:8080 - admin_api
+# localhost:8081 - admin_application
+# localhost:8082 - catalog_api
+# localhost:8083 - catalog_application
+
 services:
 
   rabbitmq:
@@ -84,4 +89,30 @@ services:
     links:
      - catalog_db
      - rabbitmq
+
+
+  webshopcatalogapi:
+    restart: on-failure
+    container_name: 'catalog_api'
+    image: ${DOCKER_REGISTRY-}webshopcatalogapi
+    build:
+      context: .
+      dockerfile: WebShopCatalogAPI/Dockerfile
+    ports:
+      - 8082:443
+    links:
+     - catalog_db
+
+
+  webshopcatalogapplication:
+    restart: on-failure
+    container_name: 'catalog_application'
+    image: ${DOCKER_REGISTRY-}webshopcatalogapplication
+    build:
+      context: .
+      dockerfile: WebShopCatalogApplication/Dockerfile
+    ports:
+      - 8083:443
+    links:
+     - catalog_api
 

@@ -27,6 +27,8 @@ namespace WebShopCatalogConsumer.Db
         public Category Create(Category category)
         {
             _categories.InsertOne(category);
+            AddChildCategory(category.ParentId, category.RelationalId, category.Name);
+
             return category;
         }
 
@@ -36,12 +38,42 @@ namespace WebShopCatalogConsumer.Db
             oldCategory.Name = category.Name;
             oldCategory.ParentId = category.ParentId;
 
+            if (oldCategory.ParentId != category.ParentId)
+            {
+                RemoveChildCategory(oldCategory.ParentId, category.RelationalId);
+                AddChildCategory(category.ParentId, category.RelationalId, category.Name);
+            }
+
             _categories.ReplaceOne(x => x.Id == oldCategory.Id, oldCategory);
         }
 
         public void Remove(int categoryId)
         {
+            var category = _categories.Find(x => x.RelationalId == categoryId).FirstOrDefault();
             _categories.DeleteOne(x => x.RelationalId == categoryId);
+            RemoveChildCategory(category.ParentId, categoryId);
+        }
+
+        private void AddChildCategory(int? parentId, int childId, string childName)
+        {
+            if (!parentId.HasValue) return;
+
+            var parentCategory = _categories.Find(x => x.RelationalId == parentId).FirstOrDefault();
+            if (parentCategory == null) return;
+
+            parentCategory.ChildCategories.Add(new ChildCategory { Id = childId, Name = childName });
+            _categories.ReplaceOne(x => x.Id == parentCategory.Id, parentCategory);
+        }
+
+        private void RemoveChildCategory(int? parentId, int childId)
+        {
+            if (!parentId.HasValue) return;
+
+            var parentCategory = _categories.Find(x => x.RelationalId == parentId).FirstOrDefault();
+            if (parentCategory == null) return;
+
+            parentCategory.ChildCategories.RemoveAll(x => x.Id == childId);
+            _categories.ReplaceOne(x => x.Id == parentCategory.Id, parentCategory);
         }
     }
 }
