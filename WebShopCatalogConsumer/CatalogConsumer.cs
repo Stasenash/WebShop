@@ -63,7 +63,7 @@ namespace WebShopCatalogConsumer
             Console.WriteLine($"{context.Message.GetType().Name} received");
             _itemService.Create(context.Message.CategoryId, new Item
             {
-                RelationalId = context.Message.ItemId,
+                Id = context.Message.ItemId,
                 Price = context.Message.Price,
                 Name = context.Message.Name,
                 ImageUrl = context.Message.ImageUrl
@@ -75,7 +75,7 @@ namespace WebShopCatalogConsumer
             Console.WriteLine($"{context.Message.GetType().Name} received");
             _itemService.Update(context.Message.CategoryId, new Item
             {
-                RelationalId = context.Message.ItemId,
+                Id = context.Message.ItemId,
                 Price = context.Message.Price,
                 Name = context.Message.Name,
                 ImageUrl = context.Message.ImageUrl

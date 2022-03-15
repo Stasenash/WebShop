@@ -1,9 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WebShopAdminAPI.Db;
-using System;
-using System.Threading.Tasks;
-using MassTransit;
-using Microsoft.Extensions.DependencyInjection;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using WebShopCatalogAPI.Db;
 
 namespace WebShopCatalogAPI
 {
@@ -11,9 +9,9 @@ namespace WebShopCatalogAPI
     {
         public Startup(IConfigurationRoot configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
-        public IConfigurationRoot Configuration { get; }
+        public IConfigurationRoot _configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -21,13 +19,12 @@ namespace WebShopCatalogAPI
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
-            services.AddSingleton(_ => Configuration);
+            services.AddSingleton(_ => _configuration);
 
-            services.Configure<CatalogDatabaseSettings>(configuration.GetSection(nameof(CatalogDatabaseSettings)));
+            services.Configure<CatalogDatabaseSettings>(_configuration.GetSection(nameof(CatalogDatabaseSettings)));
             services.AddSingleton<ICatalogDatabaseSettings>(sp => sp.GetRequiredService<IOptions<CatalogDatabaseSettings>>().Value);
 
             services.AddSingleton<CategoryService>();
-            services.AddSingleton<ItemService>();
 
             services.AddMassTransit(x =>
             {
@@ -50,12 +47,6 @@ namespace WebShopCatalogAPI
 
             app.UseSwagger();
             app.UseSwaggerUI();
-
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = serviceScope.ServiceProvider.GetRequiredService<AdminDbContext>();
-                context.Database.Migrate();
-            }
         }
     }
 }

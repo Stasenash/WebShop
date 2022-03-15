@@ -10,8 +10,7 @@ namespace WebShopCatalogConsumer.Db
 {
     public class Item
     {
-        public string Id { get; set; }
-        public int RelationalId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public double Price { get; set; }
         public string ImageUrl { get; set; }

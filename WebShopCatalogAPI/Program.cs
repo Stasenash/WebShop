@@ -1,6 +1,6 @@
 using Serilog;
 using Serilog.Events;
-using WebShopAdminAPI;
+using WebShopCatalogAPI;
 
 var builder = WebApplication.CreateBuilder(args);
     

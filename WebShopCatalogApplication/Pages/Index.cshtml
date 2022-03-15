@@ -1,10 +1,36 @@
-﻿@page "{id:string}"
-@using WebShopCatalogApplication.Pages
-@model IndexModel
+﻿@page "{id:int?}"
+@model WebShopCatalogApplication.Pages.IndexModel
+
 @{
     ViewData["Title"] = "Home page";
 }
 
 <div class="text-center">
-    <a href="/Categories">Категории</a>
+    @if (Model.Category == null)
+    {
+        <p>Something went wrong</p>
+    }
+    else
+    {
+       <p>@Model.Category.Name</p>
+       <ul>
+        @foreach(var child in Model.Category.ChildCategories)
+        {
+            <li><a asp-page="Index" asp-route-id="@child.Id">@child.Name</a></li>            
+        }
+        @foreach(var item in Model.Category.Items)
+        {
+            <div>
+                <table>
+                    <tr>
+                        <td><img src="@item.ImageUrl" height="200" /></td>
+                        <td>@item.Name</td>
+                        <td>@item.Price</td>
+                    </tr>
+                </table>
+            </div>
+        }
+        </ul>
+    }
+    
 </div>

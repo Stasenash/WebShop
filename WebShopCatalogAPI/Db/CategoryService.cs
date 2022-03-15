@@ -20,11 +20,19 @@ namespace WebShopCatalogAPI.Db
             _categories = database.GetCollection<Category>(settings.CatalogCollectionName);
         }
 
-        public List<Category> Get()
+        public Category Get()
         {
-            return _categories.Find(x => x.ParentId == null).ToList();
-        } 
+            var categories = _categories.Find(x => x.ParentId == null).ToList();
 
-        public Category Get(string id) => _categories.Find(x => x.Id == id).FirstOrDefault();
+            return new Category
+            {
+                Id = string.Empty,
+                RelationalId = -1,
+                Name = "Catalog",
+                ChildCategories = categories.Select(x => new ChildCategory { Id = x.RelationalId, Name = x.Name }).ToList()
+            };
+        }
+
+        public Category Get(int id) => _categories.Find(x => x.RelationalId == id).FirstOrDefault();
     }
 }

@@ -37,7 +37,7 @@ namespace WebShopCatalogAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetCategory(string id)
+        public ActionResult GetCategory(int id)
         {
             try
             {

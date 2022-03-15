@@ -38,24 +38,16 @@ namespace WebShopCatalogApplication
             _config = (IConfigurationRoot)configRoot;
         }
 
-        public async Task<List<Category>> GetCatalog(string rootCategory)
+        public async Task<Category> GetCatalog(int? rootCategory)
         {
             using (var httpClient = CreateHttpClient())
             {
-                var uri = string.IsNullOrEmpty(rootCategory) ? "/catalog" : $"/catalog/{rootCategory}";
+                var uri = !rootCategory.HasValue ? "/catalog" : $"/catalog/{rootCategory}";
                 var response = await httpClient.GetAsync(uri);
                 var content = await response.Content.ReadAsStringAsync();
 
-                if (string.IsNullOrEmpty(rootCategory))
-                {
-                    var categories = JsonConvert.DeserializeObject<List<Category>>(content) ?? new List<Category>();
-                    return categories;
-                }
-                else
-                {
-                    var category = JsonConvert.DeserializeObject<Category>(content);
-                    return category;
-                }
+                var category = JsonConvert.DeserializeObject<Category>(content);
+                return category;
             }
         }       
 

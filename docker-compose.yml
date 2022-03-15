@@ -36,7 +36,7 @@ services:
     container_name: 'admin_api'
     image: ${DOCKER_REGISTRY-}webshopadminapi
     environment:
-      RABBITMQ_HOST: "rabbitmq:5672"
+      RABBITMQ_HOST: "rabbitmq"
       RABBITMQ_PORT: 5672
       RABBITMQ_USER: "guest"
       RABBITMQ_PASS: "guest"
@@ -59,7 +59,7 @@ services:
     ports:
       - 8081:443
     links:
-      - admin_api
+      - webshopadminapi
 
 #--------------------------------CATALOG--------------------------------------
   catalog_db:
@@ -78,7 +78,7 @@ services:
     restart: on-failure
     container_name: 'catalog_consumer'
     environment:
-      RABBITMQ_HOST: "rabbitmq:5672"
+      RABBITMQ_HOST: "rabbitmq"
       RABBITMQ_PORT: 5672
       RABBITMQ_USER: "guest"
       RABBITMQ_PASS: "guest"
@@ -114,5 +114,5 @@ services:
     ports:
       - 8083:443
     links:
-     - catalog_api
+     - webshopcatalogapi
 
