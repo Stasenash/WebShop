@@ -14,9 +14,10 @@ namespace WebShopCatalogApplication.Pages
             _dataService = dataService;
         }
 
-        public async Task<Category> OnGet(int? categoryId)
+        public async Task<IActionResult> OnGetAsync(int? categoryId)
         {
-            return await _dataService.GetCatalog(categoryId);
+            Category = await _dataService.GetCatalog(categoryId);
+            return Page();
         }
     }
 }

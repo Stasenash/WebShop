@@ -32,7 +32,7 @@ namespace WebShopCatalogConsumer
             Console.WriteLine($"{context.Message.GetType().Name} received");
             var category = new Category
             {
-                RelationalId = context.Message.Id,
+                Id = context.Message.Id,
                 Name = context.Message.Name,
                 ParentId = context.Message.ParentId
             };
@@ -46,7 +46,7 @@ namespace WebShopCatalogConsumer
 
             _categoryService.Update(new Category
             {
-                RelationalId = context.Message.Id,
+                Id = context.Message.Id,
                 Name = context.Message.Name,
                 ParentId = context.Message.ParentId
             });
@@ -63,7 +63,7 @@ namespace WebShopCatalogConsumer
             Console.WriteLine($"{context.Message.GetType().Name} received");
             _itemService.Create(context.Message.CategoryId, new Item
             {
-                Id = context.Message.ItemId,
+                Id = context.Message.Id,
                 Price = context.Message.Price,
                 Name = context.Message.Name,
                 ImageUrl = context.Message.ImageUrl
@@ -75,7 +75,7 @@ namespace WebShopCatalogConsumer
             Console.WriteLine($"{context.Message.GetType().Name} received");
             _itemService.Update(context.Message.CategoryId, new Item
             {
-                Id = context.Message.ItemId,
+                Id = context.Message.Id,
                 Price = context.Message.Price,
                 Name = context.Message.Name,
                 ImageUrl = context.Message.ImageUrl
@@ -85,7 +85,7 @@ namespace WebShopCatalogConsumer
         public async Task Consume(ConsumeContext<IItemDeleted> context)
         {
             Console.WriteLine($"{context.Message.GetType().Name} received");
-            _itemService.Remove(context.Message.CategoryId, context.Message.ItemId);
+            _itemService.Remove(context.Message.CategoryId, context.Message.Id);
         }
     }
 }

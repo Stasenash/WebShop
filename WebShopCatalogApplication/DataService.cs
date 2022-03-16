@@ -6,8 +6,7 @@ namespace WebShopCatalogApplication
 {
     public class Category
     {
-        public string Id { get; set; }
-        public int RelationalId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public int? ParentId { get; set; }
         public List<ChildCategory> ChildCategories { get; } = new List<ChildCategory>();
@@ -22,8 +21,7 @@ namespace WebShopCatalogApplication
 
     public class Item
     {
-        public string Id { get; set; }
-        public int RelationalId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public double Price { get; set; }
         public string ImageUrl { get; set; }

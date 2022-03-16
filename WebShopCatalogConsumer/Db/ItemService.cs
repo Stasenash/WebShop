@@ -22,10 +22,11 @@ namespace WebShopCatalogConsumer.Db
 
         public Item Create(int categoryId, Item item)
         {
-            var category = _categories.Find(x => x.RelationalId == categoryId).FirstOrDefault();
+            var category = _categories.Find(x => x.Id == categoryId).FirstOrDefault();
             if (category == null) throw new KeyNotFoundException();
 
-            if (category.Items.Any(x => x.Id == item.Id))
+            
+            if (!category.Items.Any(x => x.Id == item.Id))
             {
                 category.Items.Add(item);
                 _categories.ReplaceOne(x => x.Id == category.Id, category);
@@ -35,7 +36,7 @@ namespace WebShopCatalogConsumer.Db
 
         public void Update(int categoryId, Item item)
         {
-            var category = _categories.Find(x => x.RelationalId == categoryId).FirstOrDefault();
+            var category = _categories.Find(x => x.Id == categoryId).FirstOrDefault();
             if (category == null) throw new KeyNotFoundException();
 
             var itemOld = category.Items.FirstOrDefault(x => x.Id == item.Id);
@@ -47,7 +48,7 @@ namespace WebShopCatalogConsumer.Db
 
         public void Remove(int categoryId, int itemId)
         {
-            var category = _categories.Find(x => x.RelationalId == categoryId).FirstOrDefault();
+            var category = _categories.Find(x => x.Id == categoryId).FirstOrDefault();
             if (category == null) throw new KeyNotFoundException();
 
             var itemToDelete = category.Items.FirstOrDefault(x => x.Id == itemId);

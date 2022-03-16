@@ -26,13 +26,16 @@ namespace WebShopCatalogAPI.Db
 
             return new Category
             {
-                Id = string.Empty,
-                RelationalId = -1,
+                Id = -1,
                 Name = "Catalog",
-                ChildCategories = categories.Select(x => new ChildCategory { Id = x.RelationalId, Name = x.Name }).ToList()
+                ChildCategories = categories.Select(x => new ChildCategory { Id = x.Id, Name = x.Name }).ToList()
             };
         }
 
-        public Category Get(int id) => _categories.Find(x => x.RelationalId == id).FirstOrDefault();
+        public Category Get(int id)
+        {
+            var category = _categories.Find(x => x.Id == id).FirstOrDefault();
+            return category;
+        }
     }
 }

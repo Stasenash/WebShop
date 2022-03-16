@@ -22,26 +22,26 @@ namespace WebShopCatalogConsumer.Db
 
         public List<Category> Get() => _categories.Find(Category => true).ToList();
 
-        public Category Get(string id) => _categories.Find(x => x.Id == id).FirstOrDefault();
+        public Category Get(int id) => _categories.Find(x => x.Id == id).FirstOrDefault();
 
         public Category Create(Category category)
         {
             _categories.InsertOne(category);
-            AddChildCategory(category.ParentId, category.RelationalId, category.Name);
+            AddChildCategory(category.ParentId, category.Id, category.Name);
 
             return category;
         }
 
         public void Update(Category category)
         {
-            var oldCategory = _categories.Find(x => x.RelationalId == category.RelationalId).FirstOrDefault();
+            var oldCategory = _categories.Find(x => x.Id == category.Id).FirstOrDefault();
             oldCategory.Name = category.Name;
             oldCategory.ParentId = category.ParentId;
 
             if (oldCategory.ParentId != category.ParentId)
             {
-                RemoveChildCategory(oldCategory.ParentId, category.RelationalId);
-                AddChildCategory(category.ParentId, category.RelationalId, category.Name);
+                RemoveChildCategory(oldCategory.ParentId, category.Id);
+                AddChildCategory(category.ParentId, category.Id, category.Name);
             }
 
             _categories.ReplaceOne(x => x.Id == oldCategory.Id, oldCategory);
@@ -49,8 +49,10 @@ namespace WebShopCatalogConsumer.Db
 
         public void Remove(int categoryId)
         {
-            var category = _categories.Find(x => x.RelationalId == categoryId).FirstOrDefault();
-            _categories.DeleteOne(x => x.RelationalId == categoryId);
+            var category = _categories.Find(x => x.Id == categoryId).FirstOrDefault();
+            if (category == null) return;
+
+            _categories.DeleteOne(x => x.Id == categoryId);
             RemoveChildCategory(category.ParentId, categoryId);
         }
 
@@ -58,7 +60,7 @@ namespace WebShopCatalogConsumer.Db
         {
             if (!parentId.HasValue) return;
 
-            var parentCategory = _categories.Find(x => x.RelationalId == parentId).FirstOrDefault();
+            var parentCategory = _categories.Find(x => x.Id == parentId).FirstOrDefault();
             if (parentCategory == null) return;
 
             parentCategory.ChildCategories.Add(new ChildCategory { Id = childId, Name = childName });
@@ -69,7 +71,7 @@ namespace WebShopCatalogConsumer.Db
         {
             if (!parentId.HasValue) return;
 
-            var parentCategory = _categories.Find(x => x.RelationalId == parentId).FirstOrDefault();
+            var parentCategory = _categories.Find(x => x.Id == parentId).FirstOrDefault();
             if (parentCategory == null) return;
 
             parentCategory.ChildCategories.RemoveAll(x => x.Id == childId);

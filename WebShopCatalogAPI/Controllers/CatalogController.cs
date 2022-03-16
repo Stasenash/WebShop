@@ -14,8 +14,7 @@ namespace WebShopCatalogAPI.Controllers
 
         public CatalogController(
             CategoryService db,
-            ILogger<CatalogController> logger,
-            IPublishEndpoint publishEndpoint)
+            ILogger<CatalogController> logger)
         {
             _db = db;
             _logger = logger;

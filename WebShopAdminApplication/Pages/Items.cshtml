@@ -13,12 +13,20 @@
     .OrderBy(x => x.CategoryName)
     .ToList();
 }
+
+<style>
+    img {
+        max-width: 150px !important;
+        max-height: 150px !important;
+    }
+</style>
+
 <h1>Товары</h1>
 <form method="post">
     @foreach(var item in groupedItems)
     {
         <div>
-            <img src="@item.ImageUrl" height="200"/>
+            <img src="@item.ImageUrl"/>
             <p>@item.DisplayName</p>
             <p>@item.Price руб.</p>
             <button>
