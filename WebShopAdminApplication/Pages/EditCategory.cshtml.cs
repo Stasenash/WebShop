@@ -24,7 +24,26 @@ namespace WebShopAdminApplication.Pages
         public async Task<IActionResult> OnGetAsync(int id)
         {
             var categories = await _dataService.GetCategories();
-            AllCategories = categories.Select(x => new SelectListItem
+            List<int> excludedChildIds = new List<int> { id };
+            excludedChildIds.AddRange(categories.Where(c => c.Id != null && c.ParentId == id).Select(c => c.Id.Value).ToList());
+            
+            while (true)
+            {
+                int count1 = excludedChildIds.Count;
+                excludedChildIds.AddRange(
+                    categories
+                    .Where(c => 
+                        c.Id != null 
+                        && c.ParentId != null 
+                        && excludedChildIds.Contains(c.ParentId.Value)
+                        && !excludedChildIds.Contains(c.Id.Value))
+                    .Select(c => c.Id.Value)
+                    .ToList());
+                int count2 = excludedChildIds.Count;
+                if (count1 == count2) break;
+            }
+
+            AllCategories = categories.Where(x => !excludedChildIds.Contains(x.Id.Value)).Select(x => new SelectListItem
             {
                 Value = x.Id.ToString(),
                 Text = x.Name

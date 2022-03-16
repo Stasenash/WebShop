@@ -27,7 +27,7 @@ namespace WebShopCatalogAPI.Db
             return new Category
             {
                 Id = -1,
-                Name = "Catalog",
+                Name = "Каталог",
                 ChildCategories = categories.Select(x => new ChildCategory { Id = x.Id, Name = x.Name }).ToList()
             };
         }
