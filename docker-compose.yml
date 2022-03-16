@@ -44,7 +44,7 @@ services:
       context: .
       dockerfile: WebShopAdminAPI/Dockerfile
     ports:
-      - 8080:443
+      - 8080:80
     links:
       - admin_db
       - rabbitmq
@@ -57,7 +57,7 @@ services:
       context: .
       dockerfile: WebShopAdminApplication/Dockerfile
     ports:
-      - 8081:443
+      - 8081:80
     links:
       - webshopadminapi
 
@@ -99,7 +99,7 @@ services:
       context: .
       dockerfile: WebShopCatalogAPI/Dockerfile
     ports:
-      - 8082:443
+      - 8082:80
     links:
      - catalog_db
 
@@ -112,7 +112,7 @@ services:
       context: .
       dockerfile: WebShopCatalogApplication/Dockerfile
     ports:
-      - 8083:443
+      - 8083:80
     links:
      - webshopcatalogapi
 
