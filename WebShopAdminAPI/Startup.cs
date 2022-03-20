@@ -11,9 +11,9 @@ namespace WebShopAdminAPI
     {
         public Startup(IConfigurationRoot configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
-        public IConfigurationRoot Configuration { get; }
+        public IConfigurationRoot _configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -21,9 +21,9 @@ namespace WebShopAdminAPI
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
-            services.AddSingleton(_ => Configuration);
+            services.AddSingleton(_ => _configuration);
 
-            services.AddDbContext<AdminDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("AdminDb")));
+            services.AddDbContext<AdminDbContext>(options => options.UseNpgsql(_configuration.GetConnectionString("AdminDb")));
 
             services.AddMassTransit(x =>
             {

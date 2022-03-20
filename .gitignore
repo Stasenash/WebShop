@@ -398,3 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 admin_db_backup
 catalog_db_backup
+user_db_backup

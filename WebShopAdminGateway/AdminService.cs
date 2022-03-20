@@ -1,18 +1,17 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Http.Headers;
 
-namespace WebShopAdminApplication
+namespace WebShopAdminGateway
 {
-    public class CategoryDto
+    public class Category
     {
         public int? Id { get; set; }
         public string Name { get; set; }
         public int? ParentId { get; set; }
     }
 
-    public class ItemDto
+    public class Item
     {
         public int? Id { get; set; }
         public string Name { get; set; }
@@ -22,29 +21,29 @@ namespace WebShopAdminApplication
         public int CategoryId { get; set; }
     }
 
-    public class DataService
+    public class AdminService
     {
         private IConfigurationRoot _config;
 
-        public DataService(IConfiguration configRoot)
+        public AdminService(IConfiguration configRoot)
         {
             _config = (IConfigurationRoot)configRoot;
         }
 
         #region Categories
-        public async Task<List<CategoryDto>> GetCategories()
+        public async Task<List<Category>> GetCategories()
         {
             using (var httpClient = CreateHttpClient())
             {
                 var response = await httpClient.GetAsync("/categories/list");
                 var content = await response.Content.ReadAsStringAsync();
 
-                var categories = JsonConvert.DeserializeObject<List<CategoryDto>>(content) ?? new List<CategoryDto>();
+                var categories = JsonConvert.DeserializeObject<List<Category>>(content) ?? new List<Category>();
                 return categories;
             }
         }
 
-        public async Task<bool> CreateCategory(CategoryDto category)
+        public async Task<bool> CreateCategory(Category category)
         {
             category.Id = null;
             using (var httpClient = CreateHttpClient())
@@ -55,7 +54,7 @@ namespace WebShopAdminApplication
             }
         }
 
-        public async Task<bool> UpdateCategory(CategoryDto category)
+        public async Task<bool> UpdateCategory(Category category)
         {
             using (var httpClient = CreateHttpClient())
             {
@@ -76,31 +75,31 @@ namespace WebShopAdminApplication
         #endregion
 
         #region Items
-        public async Task<List<ItemDto>> GetItems()
+        public async Task<List<Item>> GetItems()
         {
             using (var httpClient = CreateHttpClient())
             {
                 var response = await httpClient.GetAsync("/items/list");
                 var content = await response.Content.ReadAsStringAsync();
 
-                var items = JsonConvert.DeserializeObject<List<ItemDto>>(content) ?? new List<ItemDto>();
+                var items = JsonConvert.DeserializeObject<List<Item>>(content) ?? new List<Item>();
                 return items;
             }
         }
 
-        public async Task<ItemDto> GetItem(int id)
+        public async Task<Item> GetItem(int id)
         {
             using (var httpClient = CreateHttpClient())
             {
                 var response = await httpClient.GetAsync($"/items?id={id}");
                 var content = await response.Content.ReadAsStringAsync();
 
-                var item = JsonConvert.DeserializeObject<ItemDto>(content) ?? new ItemDto();
+                var item = JsonConvert.DeserializeObject<Item>(content) ?? new Item();
                 return item;
             }
         }
 
-        public async Task<bool> CreateItem(ItemDto item)
+        public async Task<bool> CreateItem(Item item)
         {
             item.Id = null;
             using (var httpClient = CreateHttpClient())
@@ -111,7 +110,7 @@ namespace WebShopAdminApplication
             }
         }
 
-        public async Task<bool> UpdateItem(ItemDto item)
+        public async Task<bool> UpdateItem(Item item)
         {
             using (var httpClient = CreateHttpClient())
             {
@@ -131,21 +130,6 @@ namespace WebShopAdminApplication
         }
         #endregion
 
-        public async Task<string> Auth(string username, string password)
-        {
-            using (var httpClient = CreateHttpClient())
-            {
-                var content = GetHttpContent(JsonConvert.SerializeObject(new { UserName = username, Password = password }));
-                var response = await httpClient.PostAsync($"/auth", content);
-                var reponseContent = await response.Content.ReadAsStringAsync();
-                var jo = JObject.Parse(reponseContent);
-                if (response.StatusCode != HttpStatusCode.OK)
-                    return null;
-
-                var token = jo["Token"];
-                return token.ToString();
-            }
-        }
 
         private HttpClient CreateHttpClient()
         {

@@ -19,12 +19,18 @@ namespace WebShopAdminApplication.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            var isAuth = HttpUtils.GetIsAuth(HttpContext);
+            if (!isAuth) return RedirectToPage("Auth");
+
             Categories = await _dataService.GetCategories();
             return Page();
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
+            var isAuth = HttpUtils.GetIsAuth(HttpContext);
+            if (!isAuth) return RedirectToPage("Auth");
+
             IsError = await _dataService.DeleteCategory(id);
             Categories = await _dataService.GetCategories();
             return Page();

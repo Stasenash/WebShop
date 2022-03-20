@@ -5,8 +5,12 @@ namespace WebShopAdminApplication.Pages
 {
     public class IndexModel : PageModel
     {
-        public async Task OnGet()
+        public IActionResult OnGet()
         {
+            var isAuth = HttpUtils.GetIsAuth(HttpContext);
+            if (!isAuth) return RedirectToPage("Auth");
+
+            return Page();
         }
     }
 }

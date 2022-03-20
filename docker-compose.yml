@@ -1,9 +1,14 @@
 version: '3.4'
 
+# localhost:5432  - admin_db   (postgres)
+# localhost:27017 - catalog_db (mongo)
+# localhost:5433  - user_db    (postgres)
+
 # localhost:8080 - admin_api
 # localhost:8081 - admin_application
 # localhost:8082 - catalog_api
 # localhost:8083 - catalog_application
+# localhost:8084 - admin_gateway
 
 services:
 
@@ -60,6 +65,7 @@ services:
       - 8081:80
     links:
       - webshopadminapi
+      - webshopadmingateway
 
 #--------------------------------CATALOG--------------------------------------
   catalog_db:
@@ -116,3 +122,30 @@ services:
     links:
      - webshopcatalogapi
 
+#--------------------------------GATEWAYS--------------------------------------
+
+  user_db:
+    image: postgres:13.3
+    restart: always
+    container_name: 'user_db'
+    environment:
+      POSTGRES_DB: user
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    ports:
+      - 5433:5432
+    volumes:
+      - ./user_db_backup:/var/lib/postgresql/data
+
+  webshopadmingateway:
+    restart: on-failure
+    container_name: 'admin_gateway'
+    image: ${DOCKER_REGISTRY-}webshopadmingateway
+    build:
+      context: .
+      dockerfile: WebShopAdminGateway/Dockerfile
+    ports:
+      - 8084:80
+    links:
+        - webshopadminapi
+        - user_db

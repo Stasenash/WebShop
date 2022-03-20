@@ -23,6 +23,9 @@ namespace WebShopAdminApplication.Pages
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
+            var isAuth = HttpUtils.GetIsAuth(HttpContext);
+            if (!isAuth) return RedirectToPage("Auth");
+
             var categories = await _dataService.GetCategories();
             List<int> excludedChildIds = new List<int> { id };
             excludedChildIds.AddRange(categories.Where(c => c.Id != null && c.ParentId == id).Select(c => c.Id.Value).ToList());
@@ -58,6 +61,9 @@ namespace WebShopAdminApplication.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
+            var isAuth = HttpUtils.GetIsAuth(HttpContext);
+            if (!isAuth) return RedirectToPage("Auth");
+
             if (Category.Id == null)
                 IsSuccess = await _dataService.CreateCategory(Category);
             else
