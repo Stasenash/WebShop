@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebShopAdminAPI.Db
@@ -54,6 +55,7 @@ namespace WebShopAdminAPI.Db
         /// <summary>
         /// Навигационное поле
         /// </summary>
+        [JsonIgnore]
         public ICollection<User> Users { get; set; }
     }
 }

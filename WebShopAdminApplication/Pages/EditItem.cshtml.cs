@@ -23,7 +23,7 @@ namespace WebShopAdminApplication.Pages
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var isAuth = HttpUtils.GetIsAuth(HttpContext);
+            var isAuth = HttpUtils.GetIsAuth();
             if (!isAuth) return RedirectToPage("Auth");
 
             var categories = await _dataService.GetCategories();
@@ -40,7 +40,7 @@ namespace WebShopAdminApplication.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var isAuth = HttpUtils.GetIsAuth(HttpContext);
+            var isAuth = HttpUtils.GetIsAuth();
             if (!isAuth) return RedirectToPage("Auth");
 
             if (Item.Id == null)

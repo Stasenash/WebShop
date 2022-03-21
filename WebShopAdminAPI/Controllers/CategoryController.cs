@@ -1,6 +1,7 @@
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using WebShopAdminAPI.Db;
 using WebShopAdminAPI.Models;
 using WebShopContracts;
@@ -26,9 +27,24 @@ namespace WebShopAdminAPI.Controllers
             _publishEndpoint = publishEndpoint;
         }
 
-        [HttpGet("list")]
-        public ActionResult GetAllCategories()
+        private bool CheckUserRole(string userHeader)
         {
+            if (string.IsNullOrEmpty(userHeader))
+                return false;
+
+            User user = JsonConvert.DeserializeObject<User>(userHeader);
+            if (user == null)
+                return false;
+
+            return user.Roles.Any(x => x.Name == "Admin");
+        }
+
+        [HttpGet("list")]
+        public ActionResult GetAllCategories([FromHeader(Name = "User")] string userHeader)
+        {
+            if (!CheckUserRole(userHeader))
+                return StatusCode(StatusCodes.Status401Unauthorized);
+
             try
             {
                 var categories = _db.Categories
@@ -47,8 +63,11 @@ namespace WebShopAdminAPI.Controllers
 
 
         [HttpPost("create")]
-        public ActionResult CreateCategory([FromBody] CategoryCreateRequest request)
+        public ActionResult CreateCategory([FromBody] CategoryCreateRequest request, [FromHeader(Name = "User")] string userHeader)
         {
+            if (!CheckUserRole(userHeader))
+                return StatusCode(StatusCodes.Status401Unauthorized);
+
             if (request == null || string.IsNullOrEmpty(request.Name))
             {
                 return BadRequest("Запрос не может быть пустым");
@@ -88,8 +107,11 @@ namespace WebShopAdminAPI.Controllers
         }
 
         [HttpPut("edit")]
-        public ActionResult UpdateCategory([FromBody] CategoryUpdateRequest request)
+        public ActionResult UpdateCategory([FromBody] CategoryUpdateRequest request, [FromHeader(Name = "User")] string userHeader)
         {
+            if (!CheckUserRole(userHeader))
+                return StatusCode(StatusCodes.Status401Unauthorized);
+
             if (request == null || request.Id == 0 || string.IsNullOrEmpty(request.Name))
             {
                 return BadRequest("Запрос не может быть пустым");
@@ -125,8 +147,11 @@ namespace WebShopAdminAPI.Controllers
         }
 
         [HttpDelete("delete")]
-        public ActionResult DeleteCategory(int id)
+        public ActionResult DeleteCategory(int id, [FromHeader(Name = "User")] string userHeader)
         {
+            if (!CheckUserRole(userHeader))
+                return StatusCode(StatusCodes.Status401Unauthorized);
+
             if (id == 0)
             {
                 return BadRequest("Запрос не может быть пустым");

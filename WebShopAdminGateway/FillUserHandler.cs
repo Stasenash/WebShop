@@ -1,4 +1,6 @@
-﻿namespace WebShopAdminGateway
+﻿using Newtonsoft.Json;
+
+namespace WebShopAdminGateway
 {
     public class FillUserHandler : DelegatingHandler
     {
@@ -11,9 +13,9 @@
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            request.Headers.Add("User", _httpContextAccessor.HttpContext.Items["User"] as string);
+            string userHeader =  JsonConvert.SerializeObject(_httpContextAccessor.HttpContext.Items["User"]);
+            request.Headers.Add("User", userHeader);
 
-            //do stuff and optionally call the base handler..
             return await base.SendAsync(request, cancellationToken);
         }
     }

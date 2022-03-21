@@ -7,7 +7,7 @@ namespace WebShopAdminApplication.Pages
     {
         public IActionResult OnGet()
         {
-            var isAuth = HttpUtils.GetIsAuth(HttpContext);
+            var isAuth = HttpUtils.GetIsAuth();
             if (!isAuth) return RedirectToPage("Auth");
 
             return Page();

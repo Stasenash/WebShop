@@ -131,7 +131,7 @@ namespace WebShopAdminApplication
         }
         #endregion
 
-        public async Task<string> Auth(string username, string password)
+        public async Task<(string, string)> Auth(string username, string password)
         {
             using (var httpClient = CreateHttpClient())
             {
@@ -139,11 +139,26 @@ namespace WebShopAdminApplication
                 var response = await httpClient.PostAsync($"/auth", content);
                 var reponseContent = await response.Content.ReadAsStringAsync();
                 var jo = JObject.Parse(reponseContent);
-                if (response.StatusCode != HttpStatusCode.OK)
-                    return null;
 
-                var token = jo["Token"];
-                return token.ToString();
+                var token = jo["token"]?.ToString();
+                var message = jo["message"]?.ToString();                
+
+                return (token, message);
+            }
+        }
+
+        public async Task<(bool, string)> Register(string username, string password)
+        {
+            using (var httpClient = CreateHttpClient())
+            {
+                var content = GetHttpContent(JsonConvert.SerializeObject(new { UserName = username, Password = password }));
+                var response = await httpClient.PostAsync($"/register", content);
+
+                var reponseContent = await response.Content.ReadAsStringAsync();
+                var jo = JObject.Parse(reponseContent);
+                var message = jo["message"]?.ToString();
+
+                return (response.StatusCode == HttpStatusCode.OK, message);
             }
         }
 
@@ -152,6 +167,9 @@ namespace WebShopAdminApplication
             var httpClient = new HttpClient();
             string adminApiBaseUrl = _config.GetConnectionString("WebShopAdminApiBaseUrl");
             httpClient.BaseAddress = new Uri(adminApiBaseUrl);
+
+            var token = HttpUtils.GetToken();
+            if (!string.IsNullOrEmpty(token)) httpClient.DefaultRequestHeaders.Add("Authorization", token);
             return httpClient;
         }
 

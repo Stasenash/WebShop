@@ -18,7 +18,7 @@ namespace WebShopAdminApplication.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var isAuth = HttpUtils.GetIsAuth(HttpContext);
+            var isAuth = HttpUtils.GetIsAuth();
             if (!isAuth) return RedirectToPage("Auth");
 
             Items = await _dataService.GetItems();
@@ -27,7 +27,7 @@ namespace WebShopAdminApplication.Pages
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
-            var isAuth = HttpUtils.GetIsAuth(HttpContext);
+            var isAuth = HttpUtils.GetIsAuth();
             if (!isAuth) return RedirectToPage("Auth");
 
             IsError = await _dataService.DeleteItem(id);

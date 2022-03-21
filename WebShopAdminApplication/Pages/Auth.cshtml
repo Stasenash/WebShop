@@ -17,5 +17,15 @@
             <td>&nbsp;</td>
             <td><input type="submit" value="Login" /></td>
         </tr>
+        <tr>
+            <td>Зарегистрироваться?</td>
+            <td><input type="checkbox" asp-for="@Model.IsRegistration" /></td>
+        </tr>
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+            <tr>
+                <td colspan="2"><p style="color:red">@Model.Message</p></td>
+            </tr>
+        }
     </table>
 </form>

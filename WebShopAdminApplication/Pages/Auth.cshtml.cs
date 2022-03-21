@@ -13,6 +13,9 @@ namespace WebShopAdminApplication.Pages
         [BindProperty]
         public string Password { get; set; }
 
+        [BindProperty]
+        public bool IsRegistration { get; set; }
+
         public string Message { get; set; }
 
         public AuthModel(DataService dataService)
@@ -22,15 +25,28 @@ namespace WebShopAdminApplication.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var token = await _dataService.Auth(Username, Password);
-            if (string.IsNullOrEmpty(token))
+            if (IsRegistration)
             {
-                Message = "Not registered or wrong password";
+                (bool isRegistered, string errorMessage) = await _dataService.Register(Username, Password);
+                
+                if (!isRegistered) Message = errorMessage;
+                else               IsRegistration = false;
+                
                 return Page();
             }
+            else
+            {
+                (string token, string errorMessage) = await _dataService.Auth(Username, Password);
+                if (string.IsNullOrEmpty(token))
+                {
+                    Message = errorMessage;
+                    return Page();
+                }
 
-            HttpUtils.SetIsAuth(HttpContext);
-            return RedirectToPage("Index");
+                HttpUtils.SetIsAuth();
+                HttpUtils.SetToken(token);
+                return RedirectToPage("Index");
+            }
         }
     }
 }
