@@ -1,6 +1,8 @@
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using WebShopCatalogAPI.Db;
+using WebShopCatalogAPI.Models;
 
 namespace WebShopCatalogAPI.Controllers
 {
@@ -20,9 +22,23 @@ namespace WebShopCatalogAPI.Controllers
             _logger = logger;
         }
 
-        [HttpGet("")]
-        public ActionResult GetCatalog()
+        private bool CheckUserRole(string userHeader)
         {
+            if (string.IsNullOrEmpty(userHeader))
+                return false;
+
+            User user = JsonConvert.DeserializeObject<User>(userHeader);
+            if (user == null)
+                return false;
+
+            return user.Roles.Any(x => x.Name == "User");
+        }
+
+        [HttpGet("")]
+        public ActionResult GetCatalog([FromHeader(Name = "User")] string userHeader)
+        {
+            if (!CheckUserRole(userHeader)) return StatusCode(StatusCodes.Status401Unauthorized);
+
             try
             {
                 var categories = _db.Get();
@@ -36,8 +52,10 @@ namespace WebShopCatalogAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetCategory(int id)
+        public ActionResult GetCategory(int id, [FromHeader(Name = "User")] string userHeader)
         {
+            if (!CheckUserRole(userHeader)) return StatusCode(StatusCodes.Status401Unauthorized);
+
             try
             {
                 var categories = _db.Get(id);
