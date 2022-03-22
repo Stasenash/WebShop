@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Http.Headers;
 
@@ -47,7 +48,38 @@ namespace WebShopCatalogApplication
                 var category = JsonConvert.DeserializeObject<Category>(content);
                 return category;
             }
-        }       
+        }
+
+        public async Task<(string, string)> Auth(string username, string password)
+        {
+            using (var httpClient = CreateHttpClient())
+            {
+                var content = GetHttpContent(JsonConvert.SerializeObject(new { UserName = username, Password = password }));
+                var response = await httpClient.PostAsync($"/auth", content);
+                var reponseContent = await response.Content.ReadAsStringAsync();
+                var jo = JObject.Parse(reponseContent);
+
+                var token = jo["token"]?.ToString();
+                var message = jo["message"]?.ToString();
+
+                return (token, message);
+            }
+        }
+
+        public async Task<(bool, string)> Register(string username, string password)
+        {
+            using (var httpClient = CreateHttpClient())
+            {
+                var content = GetHttpContent(JsonConvert.SerializeObject(new { UserName = username, Password = password }));
+                var response = await httpClient.PostAsync($"/register", content);
+
+                var reponseContent = await response.Content.ReadAsStringAsync();
+                var jo = JObject.Parse(reponseContent);
+                var message = jo["message"]?.ToString();
+
+                return (response.StatusCode == HttpStatusCode.OK, message);
+            }
+        }
 
 
         private HttpClient CreateHttpClient()
@@ -55,7 +87,18 @@ namespace WebShopCatalogApplication
             var httpClient = new HttpClient();
             string adminApiBaseUrl = _config.GetConnectionString("CatalogApiBaseUrl");
             httpClient.BaseAddress = new Uri(adminApiBaseUrl);
+
+            var token = HttpUtils.GetToken();
+            if (!string.IsNullOrEmpty(token)) httpClient.DefaultRequestHeaders.Add("Authorization", token);
+
             return httpClient;
+        }
+
+        private HttpContent GetHttpContent(string json)
+        {
+            var content = new StringContent(json);
+            content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+            return content;
         }
     }
 }

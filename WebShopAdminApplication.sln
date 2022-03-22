@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebShopCatalogAPI", "WebSho
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebShopAdminGateway", "WebShopAdminGateway\WebShopAdminGateway.csproj", "{67901F93-B01A-4539-8351-235D4F80B4FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebShopCatalogGateway", "WebShopCatalogGateway\WebShopCatalogGateway.csproj", "{B0E82E63-567A-4C36-B1C6-0CF8F279DEF2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{67901F93-B01A-4539-8351-235D4F80B4FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67901F93-B01A-4539-8351-235D4F80B4FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67901F93-B01A-4539-8351-235D4F80B4FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0E82E63-567A-4C36-B1C6-0CF8F279DEF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0E82E63-567A-4C36-B1C6-0CF8F279DEF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0E82E63-567A-4C36-B1C6-0CF8F279DEF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0E82E63-567A-4C36-B1C6-0CF8F279DEF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

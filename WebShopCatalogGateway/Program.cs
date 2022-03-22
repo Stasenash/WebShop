@@ -6,9 +6,8 @@ using Ocelot.Middleware;
 using Serilog;
 using Serilog.Events;
 using System.Text;
-using WebShopAdminAPI.Db;
-using WebShopAdminGateway;
-using WebShopAdminGateway.Db;
+using WebShopCatalogGateway.Db;
+using WebShopCatalogGateway;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,13 +35,6 @@ app.UseMiddleware<RequestResponseLoggingMiddleware>();
 app.UseMiddleware<StopOcelotMiddleware>();
 app.UseMiddleware<JwtMiddleware>();
 app.UseOcelot().Wait();
-
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<UserDbContext>();
-    context.Database.Migrate();
-}
 
 app.Run();
 

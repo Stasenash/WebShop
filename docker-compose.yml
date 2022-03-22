@@ -9,6 +9,7 @@ version: '3.4'
 # localhost:8082 - catalog_api
 # localhost:8083 - catalog_application
 # localhost:8084 - admin_gateway
+# localhost:8085 - catalog_gateway
 
 services:
 
@@ -149,3 +150,17 @@ services:
     links:
         - webshopadminapi
         - user_db
+
+  webshopcataloggateway:    
+    restart: on-failure
+    container_name: 'catalog_gateway'
+    image: ${DOCKER_REGISTRY-}webshopcataloggateway
+    build:
+      context: .
+      dockerfile: WebShopCatalogGateway/Dockerfile
+    ports:
+      - 8085:80
+    links:
+        - webshopcatalogapi
+        - user_db
+

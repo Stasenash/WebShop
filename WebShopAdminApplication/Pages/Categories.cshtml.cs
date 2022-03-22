@@ -19,8 +19,7 @@ namespace WebShopAdminApplication.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var isAuth = HttpUtils.GetIsAuth();
-            if (!isAuth) return RedirectToPage("Auth");
+            if (!HttpUtils.GetIsAuth()) return RedirectToPage("Auth");
 
             Categories = await _dataService.GetCategories();
             return Page();

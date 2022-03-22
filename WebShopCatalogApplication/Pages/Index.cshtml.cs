@@ -16,6 +16,8 @@ namespace WebShopCatalogApplication.Pages
 
         public async Task<IActionResult> OnGetAsync(int? categoryId)
         {
+            if (!HttpUtils.GetIsAuth()) return RedirectToPage("Auth");
+
             Category = await _dataService.GetCatalog(categoryId);
             return Page();
         }

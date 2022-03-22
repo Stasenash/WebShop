@@ -46,3 +46,10 @@ services:
     ports:
       - "80"
 
+
+  webshopcataloggateway:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "80"
+
