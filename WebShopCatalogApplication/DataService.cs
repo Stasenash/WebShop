@@ -28,6 +28,21 @@ namespace WebShopCatalogApplication
         public string ImageUrl { get; set; }
     }
 
+    public class Basket
+    {
+        public List<BasketItem> Items { get; set; } = new List<BasketItem>();
+        public double TotalPrice { get; set; }
+    }
+
+    public class BasketItem
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public double Price { get; set; }
+        public int Count { get; set; }
+        public double TotalPrice { get; set; }
+    }
+
     public class DataService
     {
         private IConfigurationRoot _config;
@@ -78,6 +93,54 @@ namespace WebShopCatalogApplication
                 var message = jo["message"]?.ToString();
 
                 return (response.StatusCode == HttpStatusCode.OK, message);
+            }
+        }
+
+        public async Task<Basket> GetBasket()
+        {
+            using (var httpClient = CreateHttpClient())
+            {
+                var response = await httpClient.GetAsync("/basket");
+                var content = await response.Content.ReadAsStringAsync();
+
+                var basket = JsonConvert.DeserializeObject<Basket>(content);
+                return basket;
+            }
+        }
+
+        public async Task<Basket> BasketAddItem(int itemId)
+        {
+            using (var httpClient = CreateHttpClient())
+            {
+                var response = await httpClient.GetAsync($"/basket/add/{itemId}");
+                var content = await response.Content.ReadAsStringAsync();
+
+                var basket = JsonConvert.DeserializeObject<Basket>(content);
+                return basket;
+            }
+        }
+
+        public async Task<Basket> BasketDeleteItem(int itemId)
+        {
+            using (var httpClient = CreateHttpClient())
+            {
+                var response = await httpClient.GetAsync($"/basket/delete/{itemId}");
+                var content = await response.Content.ReadAsStringAsync();
+
+                var basket = JsonConvert.DeserializeObject<Basket>(content);
+                return basket;
+            }
+        }
+
+        public async Task<Basket> AddItem(int itemId)
+        {
+            using (var httpClient = CreateHttpClient())
+            {
+                var response = await httpClient.GetAsync($"/basket/add/{itemId}");
+                var content = await response.Content.ReadAsStringAsync();
+
+                var basket = JsonConvert.DeserializeObject<Basket>(content);
+                return basket;
             }
         }
 

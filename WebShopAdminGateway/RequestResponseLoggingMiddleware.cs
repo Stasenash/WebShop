@@ -40,19 +40,19 @@ namespace WebShopAdminGateway
             await _next(context);
 
             //Format the response from the server
-            var response = await FormatResponse(context.Response);
-            builder.Append("Response: ").AppendLine(response);
-            builder.AppendLine("Response headers: ");
-            foreach (var header in context.Response.Headers)
-            {
-                builder.Append(header.Key).Append(':').AppendLine(header.Value);
-            }
+            //var response = await FormatResponse(context.Response);
+            //builder.Append("Response: ").AppendLine(response);
+            //builder.AppendLine("Response headers: ");
+            //foreach (var header in context.Response.Headers)
+            //{
+            //    builder.Append(header.Key).Append(':').AppendLine(header.Value);
+            //}
 
-            //Save log to chosen datastore
-            _logger.LogInformation(builder.ToString());
+            ////Save log to chosen datastore
+            //_logger.LogInformation(builder.ToString());
 
-            //Copy the contents of the new memory stream (which contains the response) to the original stream, which is then returned to the client.
-            await responseBody.CopyToAsync(originalBodyStream);
+            ////Copy the contents of the new memory stream (which contains the response) to the original stream, which is then returned to the client.
+            //await responseBody.CopyToAsync(originalBodyStream);
         }
 
         private async Task<string> FormatRequest(HttpRequest request)

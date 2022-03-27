@@ -37,6 +37,7 @@
                         <td width="200"><img src="@item.ImageUrl"/></td>
                         <td width="300">@item.Name</td>
                         <td width="100">@item.Price руб.</td>
+                        <td><a asp-page="Basket" asp-page-handler="AddItem" asp-route-itemId="@item.Id">В корзину</a></td>
                     </tr>
                 </table>
             </div>

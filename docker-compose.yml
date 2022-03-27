@@ -1,8 +1,9 @@
 version: '3.4'
 
 # localhost:5432  - admin_db   (postgres)
-# localhost:27017 - catalog_db (mongo)
 # localhost:5433  - user_db    (postgres)
+# localhost:27017 - catalog_db (mongo)
+# localhost:27018 - basket_db  (mongo)
 
 # localhost:8080 - admin_api
 # localhost:8081 - admin_application
@@ -10,6 +11,7 @@ version: '3.4'
 # localhost:8083 - catalog_application
 # localhost:8084 - admin_gateway
 # localhost:8085 - catalog_gateway
+# localhost:8086 - basket_api
 
 services:
 
@@ -121,7 +123,7 @@ services:
     ports:
       - 8083:80
     links:
-     - webshopcatalogapi
+     - webshopcataloggateway
 
 #--------------------------------GATEWAYS--------------------------------------
 
@@ -162,5 +164,49 @@ services:
       - 8085:80
     links:
         - webshopcatalogapi
+        - webshopbasketapi
         - user_db
+
+#--------------------------------BASKET--------------------------------------
+
+  basket_db:
+    container_name: 'basket_db'
+    image: mongo
+    restart: always
+    ports:
+        - 27018:27017
+    environment:
+        MONGO_INITDB_ROOT_USERNAME: root
+        MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+        - ./basket_db_backup:/data/db
+
+  webshopbasketapi:
+    restart: on-failure
+    container_name: 'basket_api'
+    image: ${DOCKER_REGISTRY-}webshopbasketapi
+    build:
+      context: .
+      dockerfile: WebShopBasketAPI/Dockerfile
+    ports:
+      - 8086:80
+    links:
+     - basket_db
+
+
+  webshopbasketconsumer:
+    restart: on-failure
+    container_name: 'basket_consumer'
+    environment:
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: "guest"
+      RABBITMQ_PASS: "guest"
+    image: ${DOCKER_REGISTRY-}webshopbasketconsumer
+    build:
+      context: .
+      dockerfile: WebShopBasketConsumer/Dockerfile
+    links:
+     - basket_db
+     - rabbitmq
 

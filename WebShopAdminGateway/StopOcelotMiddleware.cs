@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.Text;
 using WebShopAdminAPI.Db;
 using WebShopAdminGateway;
 using WebShopAdminGateway.Db;
@@ -20,23 +21,28 @@ public class StopOcelotMiddleware
         string path = context.Request.Path.ToString();
         if (!routesToIgnore.Contains(context.Request.Path.ToString())) await _next(context);
 
-        var request = GetRequest(context);
+        var request = await GetRequest(context);
         if (path == "/auth")
             await Auth(context, userDb, request, jwtUtils);
         else if (path == "/register")
             await Register(context, userDb, request, jwtUtils);
     }
 
-    private AuthUserRequest GetRequest(HttpContext context)
+    private async Task<AuthUserRequest> GetRequest(HttpContext context)
     {
-        AuthUserRequest request;
-        using (StreamReader stream = new StreamReader(context.Request.Body))
-        {
-            string body = stream.ReadToEnd();
-            request = JsonConvert.DeserializeObject<AuthUserRequest>(body);
-        }
+        AuthUserRequest parsedrequest;
+        var request = context.Request;
 
-        return request;
+        request.EnableBuffering();
+        var buffer = new byte[Convert.ToInt32(request.ContentLength)];
+        await request.Body.ReadAsync(buffer, 0, buffer.Length);
+        var requestContent = Encoding.UTF8.GetString(buffer);
+
+        parsedrequest = JsonConvert.DeserializeObject<AuthUserRequest>(requestContent);
+
+        request.Body.Position = 0;  //rewinding the stream to 0
+
+        return parsedrequest;
     }
 
     private async Task Auth(HttpContext context, UserDbContext db, AuthUserRequest request, IJwtUtils jwtUtils)

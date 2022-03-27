@@ -24,7 +24,6 @@ namespace WebShopCatalogConsumer.Db
         {
             var category = _categories.Find(x => x.Id == categoryId).FirstOrDefault();
             if (category == null) throw new KeyNotFoundException();
-
             
             if (!category.Items.Any(x => x.Id == item.Id))
             {

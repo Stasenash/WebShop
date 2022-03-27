@@ -25,6 +25,11 @@
             GetHttpContext().Session.SetString("Token", token);
         }
 
+        public static void ResetToken()
+        {
+            GetHttpContext().Session.Remove("Token");
+        }
+
         private static HttpContext GetHttpContext()
         {
             var httpContext = new HttpContextAccessor().HttpContext;

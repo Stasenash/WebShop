@@ -32,7 +32,6 @@ builder.Services
     .AddDelegatingHandler<FillUserHandler>();
 
 var app = builder.Build();
-app.UseMiddleware<RequestResponseLoggingMiddleware>();
 app.UseMiddleware<StopOcelotMiddleware>();
 app.UseMiddleware<JwtMiddleware>();
 app.UseOcelot().Wait();

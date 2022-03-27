@@ -13,6 +13,10 @@
             <ul>
                 <li>
                     <a asp-area ="" asp-page="/Index">Главная</a>
+                    @if (HttpUtils.GetIsAuth())
+                    {
+                        <a asp-page="Auth" asp-page-handler="Logout">Выход</a>
+                    }
                 </li>
             </ul>
         </nav>

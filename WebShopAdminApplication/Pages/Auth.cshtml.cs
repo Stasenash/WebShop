@@ -28,10 +28,10 @@ namespace WebShopAdminApplication.Pages
             if (IsRegistration)
             {
                 (bool isRegistered, string errorMessage) = await _dataService.Register(Username, Password);
-                
-                if (!isRegistered) Message = errorMessage;
-                else               IsRegistration = false;
-                
+
+                IsRegistration = !isRegistered;
+                Message = errorMessage;
+
                 return Page();
             }
             else
@@ -47,6 +47,13 @@ namespace WebShopAdminApplication.Pages
                 HttpUtils.SetToken(token);
                 return RedirectToPage("Index");
             }
+        }
+
+        public IActionResult OnGetLogout()
+        {
+            HttpUtils.SetIsAuth(false);
+            HttpUtils.ResetToken();
+            return Page();
         }
     }
 }

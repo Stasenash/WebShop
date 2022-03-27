@@ -144,6 +144,15 @@ namespace WebShopAdminAPI.Controllers
                     CategoryId = edited.CategoryId
                 });
 
+                _publishEndpoint.Publish<IBasketItemUpdated>(new
+                {
+                    Id = edited.Id,
+                    Name = edited.Name,
+                    Price = edited.Price,
+                    ImageUrl = edited.ImageUrl,
+                    CategoryId = edited.CategoryId
+                });
+
                 return Ok(new ItemDto(edited));
             }
             catch (Exception ex)
@@ -167,6 +176,12 @@ namespace WebShopAdminAPI.Controllers
                 _db.SaveChanges();
 
                 _publishEndpoint.Publish<IItemDeleted>(new
+                {
+                    Id = item.Id,
+                    CategoryId = item.CategoryId
+                });
+
+                _publishEndpoint.Publish<IBasketItemDeleted>(new
                 {
                     Id = item.Id,
                     CategoryId = item.CategoryId

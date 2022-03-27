@@ -23,4 +23,16 @@
         public int Id { get; set; }
         public int CategoryId { get; set; }
     }
+
+    public interface IBasketItemUpdated
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public double Price { get; set; }
+    }
+
+    public interface IBasketItemDeleted
+    {
+        public int Id { get; set; }
+    }
 }
