@@ -6,11 +6,11 @@ using WebShopBasketAPI.Db;
 
 namespace WebShopBasketAPI
 {
-    public class DataService
+    public class AdminService
     {
-        private IConfigurationRoot _config;
+        private readonly IConfigurationRoot _config;
 
-        public DataService(IConfiguration configRoot)
+        public AdminService(IConfiguration configRoot)
         {
             _config = (IConfigurationRoot)configRoot;
         }

@@ -1,4 +1,4 @@
-﻿namespace WebShopAdminAPI.Models
+﻿namespace WebShopOrderAPI.Models
 {
     //public class User
     //{

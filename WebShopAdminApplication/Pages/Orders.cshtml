@@ -1,0 +1,18 @@
+﻿@page
+@model WebShopCatalogApplication.Pages.OrdersModel
+@{
+}
+<h1>Заказы</h1>
+@foreach(var item in Model.Orders)
+{
+    <div>
+        <table border="0">
+            <tr>
+                <td width="300">@item.Id</td>
+                <td width="100">@item.Status</td>
+                <td><a asp-page="Orders" asp-page-handler="Approve" asp-route-orderId="@item.Id">Подтвердить</a></td>
+                <td><a asp-page="Orders" asp-page-handler="Cancel" asp-route-orderId="@item.Id">Отменить</a></td>
+            </tr>
+        </table>
+    </div>
+}

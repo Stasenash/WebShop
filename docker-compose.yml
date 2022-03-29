@@ -2,6 +2,7 @@ version: '3.4'
 
 # localhost:5432  - admin_db   (postgres)
 # localhost:5433  - user_db    (postgres)
+# localhost:5434  - order_db   (postgres)
 # localhost:27017 - catalog_db (mongo)
 # localhost:27018 - basket_db  (mongo)
 
@@ -12,6 +13,7 @@ version: '3.4'
 # localhost:8084 - admin_gateway
 # localhost:8085 - catalog_gateway
 # localhost:8086 - basket_api
+# localhost:8087 - order_api
 
 services:
 
@@ -185,6 +187,11 @@ services:
     restart: on-failure
     container_name: 'basket_api'
     image: ${DOCKER_REGISTRY-}webshopbasketapi
+    environment:
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: "guest"
+      RABBITMQ_PASS: "guest"
     build:
       context: .
       dockerfile: WebShopBasketAPI/Dockerfile
@@ -192,7 +199,6 @@ services:
       - 8086:80
     links:
      - basket_db
-
 
   webshopbasketconsumer:
     restart: on-failure
@@ -208,5 +214,54 @@ services:
       dockerfile: WebShopBasketConsumer/Dockerfile
     links:
      - basket_db
+     - rabbitmq
+
+#--------------------------------ORDER--------------------------------------
+
+  order_db:
+    image: postgres:13.3
+    restart: always
+    container_name: 'order_db'
+    environment:
+      POSTGRES_DB: user
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    ports:
+      - 5434:5432
+    volumes:
+      - ./order_db_backup:/var/lib/postgresql/data
+
+  webshoporderapi:
+    restart: on-failure
+    container_name: 'order_api'
+    image: ${DOCKER_REGISTRY-}webshoporderapi
+    build:
+      context: .
+      dockerfile: WebShopOrderAPI/Dockerfile
+    environment:
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: "guest"
+      RABBITMQ_PASS: "guest"
+    ports:
+      - 8087:80
+    links:
+     - order_db
+
+
+  webshoporderconsumer:
+    restart: on-failure
+    container_name: 'order_consumer'
+    image: ${DOCKER_REGISTRY-}webshoporderconsumer
+    build:
+      context: .
+      dockerfile: WebShopOrderConsumer/Dockerfile
+    environment:
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: "guest"
+      RABBITMQ_PASS: "guest"
+    links:
+     - webshoporderapi
      - rabbitmq
 

@@ -25,6 +25,20 @@ namespace WebShopCatalogAPI
             services.AddSingleton<ICatalogDatabaseSettings>(sp => sp.GetRequiredService<IOptions<CatalogDatabaseSettings>>().Value);
 
             services.AddSingleton<CategoryService>();
+
+            services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    var host = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
+                    var port = Environment.GetEnvironmentVariable("RABBITMQ_PORT");
+                    var userName = Environment.GetEnvironmentVariable("RABBITMQ_USER");
+                    var password = Environment.GetEnvironmentVariable("RABBITMQ_PASS");
+
+                    cfg.Host(new Uri($"rabbitmq://{userName}:{password}@{host}:{port}"));
+                });
+            });
+            services.AddMassTransitHostedService();
         }
         public void Configure(IApplicationBuilder app)
         {

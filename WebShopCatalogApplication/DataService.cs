@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Http.Headers;
+using WebShopContracts;
 
 namespace WebShopCatalogApplication
 {
@@ -41,6 +42,12 @@ namespace WebShopCatalogApplication
         public double Price { get; set; }
         public int Count { get; set; }
         public double TotalPrice { get; set; }
+    }
+
+    public class OrderDto
+    {
+        public int Id { get; set; }
+        public OrderStatus Status { get; set; }
     }
 
     public class DataService
@@ -144,6 +151,29 @@ namespace WebShopCatalogApplication
             }
         }
 
+        public async Task<List<OrderDto>> GetOrders()
+        {
+            using (var httpClient = CreateHttpClient())
+            {
+                var response = await httpClient.GetAsync($"/orders");
+                var content = await response.Content.ReadAsStringAsync();
+
+                var orders = JsonConvert.DeserializeObject<List<OrderDto>>(content);
+                return orders;
+            }
+        }
+
+        public async Task<bool> CancelOrder(int orderId)
+        {
+            using (var httpClient = CreateHttpClient())
+            {
+                var content = GetHttpContent(JsonConvert.SerializeObject(new { OrderId = orderId, NewStatus = OrderStatus.UserCancelled }));
+                var response = await httpClient.PostAsync($"/orders/changeStatus", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                return response.StatusCode == HttpStatusCode.OK;
+            }
+        }
 
         private HttpClient CreateHttpClient()
         {

@@ -15,6 +15,7 @@
                     <a asp-area ="" asp-page="/Index">Главная</a>
                     @if (HttpUtils.GetIsAuth())
                     {
+                        <a asp-page="Orders">Заказы</a>
                         <a asp-page="Auth" asp-page-handler="Logout">Выход</a>
                     }
                 </li>

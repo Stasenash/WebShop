@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using WebShopBasketAPI.Db;
 using WebShopBasketAPI.Models;
+using WebShopContracts;
 
 namespace WebShopBasketAPI.Controllers
 {
@@ -13,16 +14,19 @@ namespace WebShopBasketAPI.Controllers
     {
         private readonly ILogger<BasketController> _logger;
         private readonly BasketService _basketDb;
-        private readonly DataService _dataService;
+        private readonly AdminService _dataService;
+        readonly IPublishEndpoint _publishEndpoint;
 
         public BasketController(
             BasketService db,
             ILogger<BasketController> logger,
-            DataService dataService)
+            AdminService dataService,
+            IPublishEndpoint publishEndpoint)
         {
             _basketDb = db;
             _logger = logger;
             _dataService = dataService;
+            _publishEndpoint = publishEndpoint;
         }
 
         private (bool, User) CheckUserRole(string userHeader)
@@ -85,6 +89,31 @@ namespace WebShopBasketAPI.Controllers
             {
                 _basketDb.DeleteItem(user.Id, itemId);
                 var basket = _basketDb.Get(user.Id);
+                return Ok(basket);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("createOrder")]
+        public async Task<ActionResult> CreateOrder([FromHeader(Name = "User")] string userHeader)
+        {
+            (var isAuthed, var user) = CheckUserRole(userHeader);
+            if (!isAuthed) return StatusCode(StatusCodes.Status401Unauthorized);
+
+            try
+            {
+                var basket = _basketDb.Get(user.Id);
+                await _publishEndpoint.Publish<IOrderCreated>(new
+                {
+                    User = user,
+                    Items = basket.Items.Select(x => x.Id).ToList()
+                });
+                _basketDb.Clear(user.Id);
+
                 return Ok(basket);
 
             }

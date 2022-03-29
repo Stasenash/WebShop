@@ -28,6 +28,12 @@ namespace WebShopBasketAPI.Db
             return new BasketDto(basket);
         }
 
+        public void Clear(int userId)
+        {
+            var basket = _baskets.Find(x => x.UserId == userId).FirstOrDefault();
+            _baskets.DeleteOne(x => x.UserId == userId);
+        }
+
         public void AddItem(int userId, Item item)
         {
             item.Count = 1;

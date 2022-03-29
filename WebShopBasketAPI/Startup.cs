@@ -25,7 +25,21 @@ namespace WebShopBasketAPI
             services.AddSingleton<IBasketDatabaseSettings>(sp => sp.GetRequiredService<IOptions<BasketDatabaseSettings>>().Value);
 
             services.AddSingleton<BasketService>();
-            services.AddSingleton<DataService>();
+            services.AddSingleton<AdminService>();
+
+            services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    var host = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
+                    var port = Environment.GetEnvironmentVariable("RABBITMQ_PORT");
+                    var userName = Environment.GetEnvironmentVariable("RABBITMQ_USER");
+                    var password = Environment.GetEnvironmentVariable("RABBITMQ_PASS");
+
+                    cfg.Host(new Uri($"rabbitmq://{userName}:{password}@{host}:{port}"));
+                });
+            });
+            services.AddMassTransitHostedService();
         }
         public void Configure(IApplicationBuilder app)
         {

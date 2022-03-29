@@ -17,9 +17,7 @@
                     @if (HttpUtils.GetIsAuth())
                     {
                         <a asp-page="Basket">Корзина</a>
-                    }
-                    @if (HttpUtils.GetIsAuth())
-                    {
+                        <a asp-page="Orders">Заказы</a>
                         <a asp-page="Auth" asp-page-handler="Logout">Выход</a>
                     }
                 </li>
