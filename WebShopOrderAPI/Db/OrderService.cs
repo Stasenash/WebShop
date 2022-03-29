@@ -61,6 +61,7 @@ namespace WebShopOrderAPI.Db
             var order = _dbContext.Orders.Where(x => x.Id == orderId).FirstOrDefault();
             if (order == null) throw new ArgumentNullException($"Couldn't find order with id='{orderId}'");
             order.Status = newStatus;
+            order.LastUpdatedAt = DateTime.Now;
 
             await _dbContext.SaveChangesAsync();
         }
